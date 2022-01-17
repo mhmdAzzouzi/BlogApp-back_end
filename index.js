@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express")
+const {sequelize}  = require('./models');
 const cors = require("cors")
 
 const { User, Channel, Video } = require('./models');
@@ -45,6 +46,12 @@ app.get('/user', async (req, res, next) => {
 })
 
 const port = process.env.PORT || 5000;
-app.listen(port, () => {
+app.listen(port, async () => {
+  try {
+    await sequelize.sync();
+    console.log('connected to database successfully.');
+  } catch (error) {
+    console.error('Unable to connect to the database:', error);
+  }
   console.log(`server is up and listening on port ${port}`);
 });
