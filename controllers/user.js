@@ -1,4 +1,6 @@
 const { User } = require("../models");
+const bcrypt = require('bcrypt')
+const jwt = require("jsonwebtoken");
 
 const list = async (req, res) => {
   try {
@@ -21,15 +23,23 @@ const getById = async (req, res) => {
 
 const add = async (req, res) => {
   try {
-    const user = await User.create({
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email,
-      password: req.body.password,
-      verified: false,
-      profileImage: req.body.profileImage,
-    });
-    if (user) return res.status(201).send(user);
+    let {firstName,lastName,email,  password, verified,profileImage } = req.body
+    let findUser = await User.findOne({where : {email}})
+
+    if(findUser) return res.status(400).send({message: "User Already Exists"})
+
+    let hashedPassword=await bcrypt.hash(password, 10)
+    const user = await User.create({firstName,lastName,email,password: hashedPassword,verified,profileImage});
+
+    if (user) {
+      let token = jwt.sign(
+        { firstName: user.firstName, email: user.email },
+        process.env.JWT_SECRET,
+        { expiresIn: "1800s" }
+      );
+      return res.status(200).send({user , token} );
+    }
+
   } catch (error) {
     return res.status(400).send(error);
   }
@@ -37,6 +47,7 @@ const add = async (req, res) => {
 
 const update = async (req, res) => {
   try {
+    let {firstName , lastName , email} = req.body
     const user = await User.findOne({ where: { id: req.params.id } });
     if (!user) {
       return res.status(404).send({
@@ -44,15 +55,16 @@ const update = async (req, res) => {
       });
     }
     user.update({
-      firstName: req.body.firstName || user.firstName,
-      lastName: req.body.lastName || user.lastName,
-      email: req.body.email || user.email,
+      firstName: firstName || user.firstName,
+      lastName: lastName || user.lastName,
+      email: email || user.email,
     });
     return res.status(200).send(user);
   } catch (error) {
     return res.status(400).send(error);
   }
 };
+
 
 const deleteUser = async (req, res) => {
   try {
@@ -63,7 +75,7 @@ const deleteUser = async (req, res) => {
       });
     }
     user.destroy();
-    return res.status(204).send();
+    return res.status(200).send({message: "user deleted !"});
   } catch (error) {
     return res.status(400).send(error);
   }
