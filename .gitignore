@@ -1,5 +1,6 @@
 /node_modules
 .env
 user.rest
-posts.rest
+post.rest
+comment.rest
 docker-compose.yaml

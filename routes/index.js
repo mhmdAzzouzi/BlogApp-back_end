@@ -4,6 +4,7 @@ const {authenticateToken} = require('../middleware/auth')
 const userController = require('../controllers').user;
 const authController = require('../controllers').auth;
 const postController = require('../controllers').post;
+const commentController = require('../controllers').comment;
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -25,5 +26,12 @@ router.get('/api/post/:uuid', postController.getById);
 router.post('/api/post', postController.add);
 router.put('/api/post/:uuid', postController.update);
 router.delete('/api/post/:uuid', postController.deletePost);
+
+/* Comment Router */
+router.get('/api/comment',  commentController.list);
+router.get('/api/comment/:uuid', commentController.getById);
+router.post('/api/comment', commentController.add);
+router.put('/api/comment/:uuid', commentController.update);
+router.delete('/api/comment/:uuid', commentController.deleteComment);
 
 module.exports = router;
