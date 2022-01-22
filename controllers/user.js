@@ -53,7 +53,7 @@ const add = async (req, res) => {
 
     if (user) {
       let token = jwt.sign(
-        { firstName: user.firstName, email: user.email },
+        {uuid:user.uuid, firstName: user.firstName, email: user.email, verified: user.verified },
         process.env.JWT_SECRET,
         { expiresIn: "1800s" }
       );

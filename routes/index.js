@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const {authenticateToken} = require('../middleware/auth')
+const {verification} = require("../middleware/verification")
 const userController = require('../controllers').user;
 const authController = require('../controllers').auth;
 const postController = require('../controllers').post;
@@ -24,8 +25,8 @@ router.delete('/api/user/:uuid', userController.deleteUser);
 router.get('/api/post',  postController.list);
 // router.get('/api/post/:uuid', postController.getById);
 router.get('/api/post/:slug', postController.getBySlug);
-router.post('/api/post', postController.add);
-router.put('/api/post/:uuid', postController.update);
+router.post('/api/post',authenticateToken, verification,  postController.add);
+router.put('/api/post/:uuid',authenticateToken, verification, postController.update);
 router.delete('/api/post/:uuid', postController.deletePost);
 
 /* Comment Router */
