@@ -1,9 +1,9 @@
 const { Post, User } = require("../models");
-const slugify = require('slugify');
+const slugify = require("slugify");
 
 const list = async (req, res) => {
   try {
-    const posts = await Post.findAll({include: User});
+    const posts = await Post.findAll({ include: User });
     if (posts) return res.status(200).json(posts);
   } catch (error) {
     return res.status(400).send(error);
@@ -22,7 +22,9 @@ const getById = async (req, res) => {
 
 const add = async (req, res) => {
   try {
-    const { title, image, body, published, likes, slug, category, UserUuid } = req.body;
+    const { title, image, body, published, likes, slug, category, UserUuid } =
+      req.body;
+
     const post = await Post.create({
       title,
       image,
@@ -30,9 +32,9 @@ const add = async (req, res) => {
       published,
       category,
       likes: 0,
-      slug: slugify(title, {remove: /[*+~.()'"!:@]/g, replacement: '_',}),
+      slug: slugify(title, { remove: /[*+~.()'"!:@]/g, replacement: "_" }),
       UserUuid,
-    })
+    });
     if (post) return res.status(201).send(post);
   } catch (error) {
     return res.status(400).send(error);
@@ -47,6 +49,11 @@ const update = async (req, res) => {
         message: "Post Not Found",
       });
     }
+    
+    if(!req.user || req.user.uuid !== post.UserUuid  ){
+      return res.status(401).send({message:"Unauthorized, your only allowed to update your posts "})
+    }
+
     post.update({
       title: req.body.title || post.title,
       image: req.body.image || post.image,
@@ -54,7 +61,9 @@ const update = async (req, res) => {
       published: req.body.published || post.published,
       category: req.body.category || post.category,
       likes: req.body.likes || post.likes,
-      slug: slugify(post.title, {remove: /[*+~.()'"!:@]/g, replacement: '_',}),
+      slug:
+        req.body.title &&
+        slugify(req.body.title, { remove: /[*+~.()'"!:@]/g, replacement: "_" }),
     });
     return res.status(200).send(post);
   } catch (error) {
@@ -77,10 +86,25 @@ const deletePost = async (req, res) => {
   }
 };
 
+const getBySlug = async (req, res) => {
+  try {
+    console.log(req.params.slug);
+    const post = await Post.findOne({
+      where: { slug: req.params.slug },
+      include: User,
+    });
+    if (post) return res.status(200).json(post);
+    return res.status(404).json({ message: "Post not found!" });
+  } catch (error) {
+    return res.status(400).send(error);
+  }
+};
+
 module.exports = {
   list,
   getById,
   add,
   update,
   deletePost,
+  getBySlug,
 };

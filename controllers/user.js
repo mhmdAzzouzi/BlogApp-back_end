@@ -1,6 +1,7 @@
 const { User } = require("../models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { userSchema, updateUserSchema } = require("../utils/validation_schema");
 
 const list = async (req, res) => {
   try {
@@ -23,8 +24,18 @@ const getById = async (req, res) => {
 
 const add = async (req, res) => {
   try {
-    let { firstName, lastName, email, password, verified, profileImage } =
-      req.body;
+    let {
+      firstName,
+      lastName,
+      email,
+      password,
+      confirmPassword,
+      verified,
+      profileImage,
+    } = req.body;
+
+    let validate = await userSchema.validateAsync(req.body);
+
     let findUser = await User.findOne({ where: { email } });
 
     if (findUser)
@@ -42,20 +53,23 @@ const add = async (req, res) => {
 
     if (user) {
       let token = jwt.sign(
-        { firstName: user.firstName, email: user.email },
+        {uuid:user.uuid, firstName: user.firstName, email: user.email, verified: user.verified },
         process.env.JWT_SECRET,
         { expiresIn: "1800s" }
       );
       return res.status(200).send({ user, token });
     }
   } catch (error) {
-    return res.status(400).send(error);
+    if (error.isJoi == true)
+      return res.status(422).send({ message: "invalid input" });
+    return res.status(500).send(error);
   }
 };
 
 const update = async (req, res) => {
   try {
     let { firstName, lastName, email } = req.body;
+    const validate = await updateUserSchema.validateAsync(req.body);
     const user = await User.findOne({ where: { uuid: req.params.uuid } });
     if (!user) {
       return res.status(404).send({
@@ -69,6 +83,8 @@ const update = async (req, res) => {
     });
     return res.status(200).send(user);
   } catch (error) {
+    if (error.isJoi)
+      return res.status(422).send({ error, message: "invalid input" });
     return res.status(400).send(error);
   }
 };
