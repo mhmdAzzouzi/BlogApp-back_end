@@ -1,5 +1,5 @@
 const { User } = require("../models");
-const bcrypt = require('bcrypt')
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const list = async (req, res) => {
@@ -13,7 +13,7 @@ const list = async (req, res) => {
 
 const getById = async (req, res) => {
   try {
-    const user = await User.findOne({ where: { id: req.params.id } });
+    const user = await User.findOne({ where: { uuid: req.params.uuid } });
     if (user) return res.status(200).json(user);
     return res.status(404).json({ message: "User not found!" });
   } catch (error) {
@@ -23,13 +23,22 @@ const getById = async (req, res) => {
 
 const add = async (req, res) => {
   try {
-    let {firstName,lastName,email,  password, verified,profileImage } = req.body
-    let findUser = await User.findOne({where : {email}})
+    let { firstName, lastName, email, password, verified, profileImage } =
+      req.body;
+    let findUser = await User.findOne({ where: { email } });
 
-    if(findUser) return res.status(400).send({message: "User Already Exists"})
+    if (findUser)
+      return res.status(400).send({ message: "User Already Exists" });
 
-    let hashedPassword=await bcrypt.hash(password, 10)
-    const user = await User.create({firstName,lastName,email,password: hashedPassword,verified,profileImage});
+    let hashedPassword = await bcrypt.hash(password, 10);
+    const user = await User.create({
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+      verified,
+      profileImage,
+    });
 
     if (user) {
       let token = jwt.sign(
@@ -37,9 +46,8 @@ const add = async (req, res) => {
         process.env.JWT_SECRET,
         { expiresIn: "1800s" }
       );
-      return res.status(200).send({user , token} );
+      return res.status(200).send({ user, token });
     }
-
   } catch (error) {
     return res.status(400).send(error);
   }
@@ -47,8 +55,8 @@ const add = async (req, res) => {
 
 const update = async (req, res) => {
   try {
-    let {firstName , lastName , email} = req.body
-    const user = await User.findOne({ where: { id: req.params.id } });
+    let { firstName, lastName, email } = req.body;
+    const user = await User.findOne({ where: { uuid: req.params.uuid } });
     if (!user) {
       return res.status(404).send({
         message: "User Not Found",
@@ -65,26 +73,25 @@ const update = async (req, res) => {
   }
 };
 
-
 const deleteUser = async (req, res) => {
   try {
-    const user = await User.findOne({ where: { id: req.params.id } });
+    const user = await User.findOne({ where: { uuid: req.params.uuid } });
     if (!user) {
       return res.status(404).send({
         message: "User Not Found",
       });
     }
     user.destroy();
-    return res.status(200).send({message: "user deleted !"});
+    return res.status(200).send({ message: "user deleted !" });
   } catch (error) {
     return res.status(400).send(error);
   }
-}
+};
 
 module.exports = {
   list,
   getById,
   add,
   update,
-  deleteUser
+  deleteUser,
 };

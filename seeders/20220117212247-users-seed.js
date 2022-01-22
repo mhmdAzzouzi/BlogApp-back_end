@@ -1,13 +1,14 @@
 'use strict';
+const { v4: uuidv4 } = require('uuid');
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
  
       await queryInterface.bulkInsert('Users', [{
-        id: 1,
-        firstName: 'user001',
-        lastName: 'bloger001',
-        email: 'user001@test.com',
+        uuid: uuidv4(),
+        firstName: 'user002',
+        lastName: 'bloger002',
+        email: 'user002@test.com',
         password: '123',
         verified: false,
         profileImage: 'https://live.staticflickr.com/8024/29835288606_c59cf15c2d_n.jpg',
