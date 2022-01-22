@@ -22,7 +22,8 @@ router.delete('/api/user/:uuid', userController.deleteUser);
 
 /* Post Router */
 router.get('/api/post',  postController.list);
-router.get('/api/post/:uuid', postController.getById);
+// router.get('/api/post/:uuid', postController.getById);
+router.get('/api/post/:slug', postController.getBySlug);
 router.post('/api/post', postController.add);
 router.put('/api/post/:uuid', postController.update);
 router.delete('/api/post/:uuid', postController.deletePost);

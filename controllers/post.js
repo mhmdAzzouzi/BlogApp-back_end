@@ -54,7 +54,7 @@ const update = async (req, res) => {
       published: req.body.published || post.published,
       category: req.body.category || post.category,
       likes: req.body.likes || post.likes,
-      slug: slugify(post.title, {remove: /[*+~.()'"!:@]/g, replacement: '_',}),
+      slug: req.body.title && slugify(req.body.title, {remove: /[*+~.()'"!:@]/g, replacement: '_',}),
     });
     return res.status(200).send(post);
   } catch (error) {
@@ -77,10 +77,22 @@ const deletePost = async (req, res) => {
   }
 };
 
+const getBySlug = async ( req, res) => {
+  try {
+    console.log(req.params.slug)
+    const post = await Post.findOne({ where: { slug: req.params.slug } , include: User });
+    if (post) return res.status(200).json(post);
+    return res.status(404).json({ message: "Post not found!" });
+  } catch (error) {
+    return res.status(400).send(error);
+  }
+}
+
 module.exports = {
   list,
   getById,
   add,
   update,
   deletePost,
+  getBySlug
 };
