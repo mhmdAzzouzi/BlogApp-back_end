@@ -1,8 +1,9 @@
-const { Post } = require("../models");
+const { Post, User } = require("../models");
+const slugify = require('slugify');
 
 const list = async (req, res) => {
   try {
-    const posts = await User.findAll();
+    const posts = await Post.findAll({include: User});
     if (posts) return res.status(200).json(posts);
   } catch (error) {
     return res.status(400).send(error);
@@ -11,9 +12,9 @@ const list = async (req, res) => {
 
 const getById = async (req, res) => {
   try {
-    const user = await User.findOne({ where: { id: req.params.id } });
-    if (user) return res.status(200).json(user);
-    return res.status(404).json({ message: "User not found!" });
+    const post = await Post.findOne({ where: { uuid: req.params.uuid } });
+    if (post) return res.status(200).json(post);
+    return res.status(404).json({ message: "Post not found!" });
   } catch (error) {
     return res.status(400).send(error);
   }
@@ -21,15 +22,18 @@ const getById = async (req, res) => {
 
 const add = async (req, res) => {
   try {
-    const user = await User.create({
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email,
-      password: req.body.password,
-      verified: false,
-      profileImage: req.body.profileImage,
-    });
-    if (user) return res.status(201).send(user);
+    const { title, image, body, published, likes, slug, category, UserUuid } = req.body;
+    const post = await Post.create({
+      title,
+      image,
+      body,
+      published,
+      category,
+      likes: 0,
+      slug: slugify(title, {remove: /[*+~.()'"!:@]/g, replacement: '_',}),
+      UserUuid,
+    })
+    if (post) return res.status(201).send(post);
   } catch (error) {
     return res.status(400).send(error);
   }
@@ -37,42 +41,46 @@ const add = async (req, res) => {
 
 const update = async (req, res) => {
   try {
-    const user = await User.findOne({ where: { id: req.params.id } });
-    if (!user) {
+    const post = await Post.findOne({ where: { uuid: req.params.uuid } });
+    if (!post) {
       return res.status(404).send({
-        message: "User Not Found",
+        message: "Post Not Found",
       });
     }
-    user.update({
-      firstName: req.body.firstName || user.firstName,
-      lastName: req.body.lastName || user.lastName,
-      email: req.body.email || user.email,
+    post.update({
+      title: req.body.title || post.title,
+      image: req.body.image || post.image,
+      body: req.body.body || post.body,
+      published: req.body.published || post.published,
+      category: req.body.category || post.category,
+      likes: req.body.likes || post.likes,
+      slug: slugify(post.title, {remove: /[*+~.()'"!:@]/g, replacement: '_',}),
     });
-    return res.status(200).send(user);
+    return res.status(200).send(post);
   } catch (error) {
     return res.status(400).send(error);
   }
 };
 
-const deleteUser = async (req, res) => {
+const deletePost = async (req, res) => {
   try {
-    const user = await User.findOne({ where: { id: req.params.id } });
-    if (!user) {
+    const post = await Post.findOne({ where: { uuid: req.params.uuid } });
+    if (!post) {
       return res.status(404).send({
-        message: "User Not Found",
+        message: "Post Not Found",
       });
     }
-    user.destroy();
-    return res.status(204).send();
+    post.destroy();
+    return res.status(200).send({ message: "Post deleted." });
   } catch (error) {
     return res.status(400).send(error);
   }
-}
+};
 
 module.exports = {
   list,
   getById,
   add,
   update,
-  deleteUser
+  deletePost,
 };
