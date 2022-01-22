@@ -15,7 +15,7 @@ app.use('/', indexRouter);
 const port = process.env.PORT || 5000;
 app.listen(port, async () => {
   try {
-    await sequelize.sync();
+    await sequelize.authenticate();
     console.log('Connected to database successfully.');
   } catch (error) {
     console.error('Unable to connect to the database:', error);
