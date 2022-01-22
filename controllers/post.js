@@ -30,7 +30,7 @@ const add = async (req, res) => {
       published,
       category,
       likes: 0,
-      slug: slugify(title, {remove: /[*+~$.()'"!:@]/g, replacement: '_',}),
+      slug: slugify(title, {remove: /[*+~.()'"!:@]/g, replacement: '_',}),
       UserUuid,
     })
     if (post) return res.status(201).send(post);
@@ -54,6 +54,7 @@ const update = async (req, res) => {
       published: req.body.published || post.published,
       category: req.body.category || post.category,
       likes: req.body.likes || post.likes,
+      slug: slugify(post.title, {remove: /[*+~.()'"!:@]/g, replacement: '_',}),
     });
     return res.status(200).send(post);
   } catch (error) {
