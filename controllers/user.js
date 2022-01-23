@@ -61,8 +61,8 @@ const add = async (req, res) => {
     }
   } catch (error) {
     if (error.isJoi == true)
-      return res.status(422).send({ message: "invalid input" });
-    return res.status(500).send(error);
+      return res.status(422).send({   message: error.message   });
+    return res.status(500).send(error.message);
   }
 };
 
@@ -84,8 +84,8 @@ const update = async (req, res) => {
     return res.status(200).send(user);
   } catch (error) {
     if (error.isJoi)
-      return res.status(422).send({ error, message: "invalid input" });
-    return res.status(400).send(error);
+      return res.status(422).send({ message: error.message });
+    return res.status(500).send(error.message);
   }
 };
 
