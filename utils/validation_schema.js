@@ -19,7 +19,13 @@ const updateUserSchema = joi.object({
   verified: joi.boolean(),
   image: joi.string(),
 })
+
+const loginSchema = joi.object({
+  email: joi.string().lowercase().email().required(),
+  password : joi.string().required()
+})
 module.exports = {
   userSchema,
-  updateUserSchema
+  updateUserSchema,
+  loginSchema
 };
