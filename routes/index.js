@@ -33,6 +33,7 @@ router.delete('/api/post/:uuid', postController.deletePost);
 /* Comment Router */
 router.get('/api/comment',  commentController.list);
 router.get('/api/comment/:uuid', commentController.getById);
+router.get('/api/commentsByPostId/:uuid', commentController.getCommentsByPostId);
 router.post('/api/comment', commentController.add);
 router.put('/api/comment/:uuid', commentController.update);
 router.delete('/api/comment/:uuid', commentController.deleteComment);
