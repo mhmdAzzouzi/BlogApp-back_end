@@ -100,6 +100,21 @@ const getBySlug = async (req, res) => {
   }
 };
 
+const getAllPostsByUserId = async (req, res) => {
+  try {
+    const {uuid} = req.params
+    const posts = await Post.findAll({where:{
+      UserUuid: uuid
+    }})
+
+    if(posts) return res.status(200).send({posts})
+    
+    res.status(404).send({message:"No posts Found"})
+  } catch (error) {
+    return res.status(500).send(error)
+  }
+}
+
 module.exports = {
   list,
   getById,
@@ -107,4 +122,5 @@ module.exports = {
   update,
   deletePost,
   getBySlug,
+  getAllPostsByUserId
 };
