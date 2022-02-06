@@ -102,7 +102,8 @@ const getBySlug = async (req, res) => {
 
 const getAllPostsByUserId = async (req, res) => {
   try {
-    const {uuid} = req.params
+    const {uuid} = req.user
+    console.log(uuid)
     const posts = await Post.findAll({where:{
       UserUuid: uuid
     }})
