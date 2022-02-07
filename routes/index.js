@@ -6,11 +6,13 @@ const userController = require('../controllers').user;
 const authController = require('../controllers').auth;
 const postController = require('../controllers').post;
 const commentController = require('../controllers').comment;
+const likeController = require('../controllers').like;
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.status(200).send("The Blog API !!!!!!!!!!!");
 });
+
 /*Auth router */
 router.post('/api/auth/login' , authController.login  )
 
@@ -22,12 +24,14 @@ router.put('/api/user/:uuid', userController.update);
 router.delete('/api/user/:uuid', userController.deleteUser);
 
 /* Post Router */
-router.get('/api/post',  postController.list);
+router.get('/api/post', authenticateToken, postController.list);
 // router.get('/api/post/:uuid', postController.getById);
 router.get('/api/post/:slug', postController.getBySlug);
 router.get('/api/postsByUserId/',authenticateToken, postController.getAllPostsByUserId);
 router.post('/api/post',authenticateToken, verification,  postController.add);
 router.put('/api/post/:uuid',authenticateToken, verification, postController.update);
+router.post('/api/post', authenticateToken, verification,  postController.add);
+router.put('/api/post/:uuid', authenticateToken, verification, postController.update);
 router.delete('/api/post/:uuid', postController.deletePost);
 
 /* Comment Router */
@@ -37,5 +41,10 @@ router.get('/api/commentsByPostId/:uuid', commentController.getCommentsByPostId)
 router.post('/api/comment', commentController.add);
 router.put('/api/comment/:uuid', commentController.update);
 router.delete('/api/comment/:uuid', commentController.deleteComment);
+
+/* Like Router */
+router.get('/api/like', authenticateToken,  likeController.list);
+router.post('/api/like', authenticateToken, likeController.toggleLike);
+router.delete('/api/like/:uuid', likeController.deleteLike);
 
 module.exports = router;
