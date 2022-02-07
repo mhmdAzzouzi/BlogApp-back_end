@@ -65,10 +65,24 @@ const deleteComment = async (req, res) => {
   }
 };
 
+const getCommentsByPostId = async (req, res) => {
+  try {
+    const {uuid} = req.params
+    console.log(uuid)
+    const comments=  await Comment.findAll({where : {
+      PostUuid : uuid
+    } , include:User})
+    if(comments) return res.status(200).send({comments})
+    return res.status(404).send({message: "No comments"})
+  } catch (error) {
+    return res.status(500).send(error)  }
+}
+
 module.exports = {
   list,
   getById,
   add,
   update,
   deleteComment,
+  getCommentsByPostId
 };
