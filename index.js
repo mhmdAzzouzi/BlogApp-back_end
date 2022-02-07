@@ -21,5 +21,5 @@ app.listen(port, async () => {
     console.error('Unable to connect to the database:', error);
   }
   console.log(`server is up and listening on port ${port}`);
-  // sync();
+  // authenticate(); sync();
 });

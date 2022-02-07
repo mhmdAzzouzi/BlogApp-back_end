@@ -5,11 +5,16 @@ module.exports = (sequelize, DataTypes) => {
   class Comment extends Model {
     static associate(models) {
       Comment.belongsTo(models.Post, {
-        foreignKey: { allowNull: false },
+        foreignKey: { 
+          allowNull: false ,
+          name: 'postId'
+        },
       }),
       Comment.belongsTo(models.User, {
-        foreignKey: { allowNull: false },
-      });
+        foreignKey: { 
+          allowNull: false,
+          name: 'userId' },
+      })
     }
   }
   Comment.init(
@@ -20,7 +25,6 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: DataTypes.UUIDV4,
       },
       body: DataTypes.STRING,
-
       createdAt: {
         type: DataTypes.DATE,
         allowNull: false,
