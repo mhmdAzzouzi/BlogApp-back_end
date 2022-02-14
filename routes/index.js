@@ -24,13 +24,12 @@ router.put('/api/user/:uuid', userController.update);
 router.delete('/api/user/:uuid', userController.deleteUser);
 
 /* Post Router */
-router.get('/api/post', authenticateToken, postController.list);
+router.get('/api/post', postController.list);
 // router.get('/api/post/:uuid', postController.getById);
 router.get('/api/post/:slug', postController.getBySlug);
 router.get('/api/postsByUserId/',authenticateToken, postController.getAllPostsByUserId);
 router.post('/api/post',authenticateToken, verification,  postController.add);
 router.put('/api/post/:uuid',authenticateToken, verification, postController.update);
-router.post('/api/post', authenticateToken, verification,  postController.add);
 router.put('/api/post/:uuid', authenticateToken, verification, postController.update);
 router.delete('/api/post/:uuid', postController.deletePost);
 
