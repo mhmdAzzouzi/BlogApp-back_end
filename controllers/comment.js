@@ -69,8 +69,8 @@ const getCommentsByPostId = async (req, res) => {
   try {
     const {uuid} = req.params
     console.log(uuid)
-    const comments=  await Comment.findAll({where : {
-      PostUuid : uuid
+    let comments =  await Comment.findAll({where : {
+      postId : uuid
     } , include:User})
     if(comments) return res.status(200).send({comments})
     return res.status(404).send({message: "No comments"})
