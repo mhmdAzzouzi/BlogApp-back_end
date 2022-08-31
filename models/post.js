@@ -2,28 +2,28 @@
 const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
-  class User extends Model {
+  class Post extends Model {
     static associate(models) {
+      Post.belongsTo(models.User, {
+        foreignKey: {allowNull:false},
 
-    }
-    toJSON() {
-      return { ...this.get(), password: undefined };
+      });
     }
   }
-  User.init(
+  Post.init(
     {
       uuid: {
         type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
         primaryKey:true,
-        allowNull:false
+        defaultValue: DataTypes.UUIDV4
       },
-      firstName: DataTypes.STRING,
-      lastName: DataTypes.STRING,
-      email: DataTypes.STRING,
-      password: DataTypes.STRING,
-      verified: DataTypes.BOOLEAN,
-      profileImage: DataTypes.STRING,
+      title: DataTypes.STRING,
+      image: DataTypes.STRING,
+      body: DataTypes.STRING,
+      published: DataTypes.BOOLEAN,
+      category: DataTypes.STRING,
+      likes: DataTypes.INTEGER,
+      slug: DataTypes.STRING,
       createdAt: {
         type: DataTypes.DATE,
         allowNull: false,
@@ -35,8 +35,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "User",
+      modelName: "Post",
     }
   );
-  return User;
+  return Post;
 };
