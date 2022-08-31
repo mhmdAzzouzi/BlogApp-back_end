@@ -21,11 +21,11 @@ const getById = async (req, res) => {
 
 const add = async (req, res) => {
   try {
-    const { body, published, PostUuid, UserUuid } = req.body;
+    const { body, postId, userId } = req.body;
     const comment = await Comment.create({
       body,
-      PostUuid,
-      UserUuid,
+      postId,
+      userId,
     })
     if (comment) return res.status(201).send(comment);
   } catch (error) {
